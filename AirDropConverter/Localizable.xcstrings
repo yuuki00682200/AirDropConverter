@@ -170,6 +170,66 @@
           }
         }
       }
+    },
+    "Move to Applications?" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Applicationsフォルダに移動しますか？"
+          }
+        }
+      }
+    },
+    "AirDropConverter works best from the Applications folder. Move it now?" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "AirDropConverterはApplicationsフォルダから実行するのが最適です。今すぐ移動しますか？"
+          }
+        }
+      }
+    },
+    "Move to Applications" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Applicationsに移動"
+          }
+        }
+      }
+    },
+    "Later" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "あとで"
+          }
+        }
+      }
+    },
+    "Could not move to Applications" : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Applicationsフォルダに移動できませんでした"
+          }
+        }
+      }
+    },
+    "Please move AirDropConverter.app to the Applications folder manually." : {
+      "localizations" : {
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "AirDropConverter.appを手動でApplicationsフォルダに移動してください。"
+          }
+        }
+      }
     }
   },
   "version" : "1.0"

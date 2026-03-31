@@ -8,8 +8,15 @@
 import SwiftUI
 import ServiceManagement
 
+class AppDelegate: NSObject, NSApplicationDelegate {
+    func applicationDidFinishLaunching(_ notification: Notification) {
+        AppMover.moveToApplicationsIfNeeded()
+    }
+}
+
 @main
 struct AirDropConverterApp: App {
+    @NSApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
     @State private var monitor = DownloadsMonitor()
 
     var body: some Scene {
