@@ -24,7 +24,10 @@ struct AirDropConverterApp: App {
         MenuBarExtra {
             MenuBarView(monitor: monitor)
         } label: {
-            Image(systemName: monitor.isEnabled ? "arrow.down.circle.fill" : "arrow.down.circle")
+            Image("MenuBarSymbol")
+                .renderingMode(.template)
+                .opacity(monitor.isEnabled ? 1 : 0.45)
+                .accessibilityLabel(monitor.isEnabled ? Text("Active") : Text("Paused"))
         }
     }
 }

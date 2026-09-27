@@ -12,3 +12,6 @@ xcuserdata/
 
 # Build artifacts
 AppIcon_1024.png
+
+# Local LP staging
+/landing-page/

@@ -2,6 +2,10 @@
 
 [日本語](#日本語) · [English](#english)
 
+サービスLPは [index.html](index.html)、デプロイ設定は [website/README.md](website/README.md) にあります。
+
+The landing page is in [index.html](index.html); hosting instructions are in [website/README.md](website/README.md).
+
 ## 日本語
 
 iPhoneからAirDropで受信したHEIC/HEIF画像を自動検出し、PNG・JPEGへ変換するmacOSメニューバーアプリです。
@@ -21,12 +25,12 @@ iPhoneからAirDropで受信したHEIC/HEIF画像を自動検出し、PNG・JPEG
 
 ### インストール
 
-1. [GitHub Releases](https://github.com/yuuki00682200/AirDropConverter/releases/latest)から最新版のZIP（v1.0.2では `AirDropConverter-v1.0.2.zip`）をダウンロードします。
+1. [GitHub Releases](https://github.com/yuuki00682200/AirDropConverter/releases/latest)から最新版のZIP（v1.0.3では `AirDropConverter-v1.0.3.zip`）をダウンロードします。
 2. 解凍し、`AirDropConverter.app`をApplicationsフォルダへコピーして起動します。別の場所から起動すると、コピーを案内します。
 3. macOSから要求されたら、ダウンロードフォルダへのアクセスを許可してください。通知の許可は任意です。
 4. メニューバーから出力形式や「変換後にHEICを削除」を設定します。
 
-**v1.0.2はDeveloper ID Application（MEMEMAKER, K.K.）で署名し、Appleの公証を取得済みです。公証チケットも添付しています。**
+**v1.0.3はDeveloper ID Application（MEMEMAKER, K.K.）で署名し、Appleの公証を取得済みです。公証チケットも添付しています。**
 
 ### 動作環境
 
@@ -66,7 +70,7 @@ AirDropで画像を受信すると、受信完了後に変換確認が表示さ�
 
 `notarize-release.sh`には秘密鍵付きのDeveloper ID Application証明書と、認証済みのnotarytoolキーチェーンプロファイルが必要です。引数はプロファイル名です。別チームの証明書は環境変数 `SIGNING_IDENTITY` で指定できます。認証情報と秘密鍵はリポジトリに保存しません。
 
-配布スクリプトはHardened Runtimeとタイムスタンプを有効にして署名し、公証のAcceptedを確認、公証チケット添付・検証・Gatekeeper検証を実施します。成果物は `build/AirDropConverter-v1.0.2.zip` と `build/SHA256SUMS.txt` です。
+配布スクリプトはHardened Runtimeとタイムスタンプを有効にして署名し、公証のAcceptedを確認、公証チケット添付・検証・Gatekeeper検証を実施します。成果物は `build/AirDropConverter-v1.0.3.zip` と `build/SHA256SUMS.txt` です。
 
 公開前には実機で、単一／複数画像のAirDrop、フォルダ権限の拒否と回復、通知、監視停止と再開、手動選択とキャンセル、Applicationsへのコピー、再ログイン後の自動起動、両言語のメニューを確認してください。
 
@@ -95,12 +99,12 @@ A macOS menu bar app that automatically detects HEIC/HEIF images received from a
 
 ### Installation
 
-1. Download the latest ZIP from [GitHub Releases](https://github.com/yuuki00682200/AirDropConverter/releases/latest) (`AirDropConverter-v1.0.2.zip` for v1.0.2).
+1. Download the latest ZIP from [GitHub Releases](https://github.com/yuuki00682200/AirDropConverter/releases/latest) (`AirDropConverter-v1.0.3.zip` for v1.0.3).
 2. Unzip, copy `AirDropConverter.app` to Applications, and open it. When launched from elsewhere, the release app offers to copy itself.
 3. Allow Downloads access when prompted. Notifications are optional.
 4. Select an output format and configure “Delete HEIC after conversion” from the menu.
 
-**v1.0.2 is signed with Developer ID Application (MEMEMAKER, K.K.), notarized by Apple, and includes the notarization ticket.**
+**v1.0.3 is signed with Developer ID Application (MEMEMAKER, K.K.), notarized by Apple, and includes the notarization ticket.**
 
 ### Requirements
 
@@ -140,7 +144,7 @@ Tests cover output types, orientation, filename collisions, original preservatio
 
 `notarize-release.sh` requires a Developer ID Application signing identity with its private key and a validated notarytool Keychain profile. The argument is the profile name. Set `SIGNING_IDENTITY` to use another team's certificate. Credentials and private keys are never stored in the repository.
 
-The distribution script signs with Hardened Runtime and a secure timestamp, requires Accepted notarization status, staples and validates the ticket, and checks Gatekeeper. Outputs are `build/AirDropConverter-v1.0.2.zip` and `build/SHA256SUMS.txt`.
+The distribution script signs with Hardened Runtime and a secure timestamp, requires Accepted notarization status, staples and validates the ticket, and checks Gatekeeper. Outputs are `build/AirDropConverter-v1.0.3.zip` and `build/SHA256SUMS.txt`.
 
 Before publishing, verify on a physical Mac: single and batch AirDrop, Downloads permission denial/recovery, notifications, pause/resume, manual selection/cancel, copying to Applications, Launch at Login after a real login, and menus in both languages.
 
