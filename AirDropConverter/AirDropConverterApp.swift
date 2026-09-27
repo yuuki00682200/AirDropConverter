@@ -8,6 +8,7 @@
 import SwiftUI
 import ServiceManagement
 
+@MainActor
 class AppDelegate: NSObject, NSApplicationDelegate {
     func applicationDidFinishLaunching(_ notification: Notification) {
         AppMover.moveToApplicationsIfNeeded()
@@ -41,10 +42,22 @@ struct MenuBarView: View {
             }
         }
 
+        if let message = monitor.statusMessage {
+            Text(message)
+        }
+        if monitor.isProcessing {
+            Text("Converting…")
+        }
+        Button("Convert HEIC Files…") { monitor.selectFiles() }
+            .disabled(monitor.isProcessing)
+        Button("Open Downloads") {
+            NSWorkspace.shared.open(FileManager.default.homeDirectoryForCurrentUser.appendingPathComponent("Downloads"))
+        }
+
         Divider()
 
         Picker("Output Format", selection: $monitor.outputFormat) {
-            ForEach(OutputFormat.allCases, id: \.self) { format in
+            ForEach(OutputFormat.supported, id: \.self) { format in
                 Text(format.rawValue).tag(format)
             }
         }
@@ -61,8 +74,10 @@ struct MenuBarView: View {
                     }
                 } catch {
                     launchAtLogin = SMAppService.mainApp.status == .enabled
+                    monitor.showError(error.localizedDescription)
                 }
             }
+            .onAppear { launchAtLogin = SMAppService.mainApp.status == .enabled }
 
         Divider()
 

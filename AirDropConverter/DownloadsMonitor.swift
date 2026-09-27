@@ -1,18 +1,15 @@
-//
-//  DownloadsMonitor.swift
-//  AirDropConverter
-//
-//  Created by Yuki Takatsu on 2026/04/01.
-//
-
 import Foundation
 import AppKit
+import ImageIO
+import UniformTypeIdentifiers
 import UserNotifications
 
+@MainActor
 @Observable
 final class DownloadsMonitor {
     var isEnabled = true {
         didSet {
+            UserDefaults.standard.set(!isEnabled, forKey: "monitorPaused")
             if isEnabled { startWatching() } else { stopWatching() }
         }
     }
@@ -24,207 +21,158 @@ final class DownloadsMonitor {
     }
     var lastConvertedFile: String?
     var convertedCount = 0
-
-    private var dispatchSource: (any DispatchSourceFileSystemObject)?
-    private var knownFiles: Set<String> = []
-    private var isProcessing = false
-    private let downloadsURL: URL
+    var isProcessing = false
+    var statusMessage: String?
+    private var timer: Timer?
+    private var tracker = FileArrivalTracker()
+    private var hasBaseline = false
+    private let downloadsURL = FileManager.default.homeDirectoryForCurrentUser.appendingPathComponent("Downloads")
 
     init() {
-        downloadsURL = FileManager.default.homeDirectoryForCurrentUser
-            .appendingPathComponent("Downloads")
-
         if let saved = UserDefaults.standard.string(forKey: "outputFormat"),
-           let format = OutputFormat(rawValue: saved) {
+           let format = OutputFormat(rawValue: saved), OutputFormat.supported.contains(format) {
             outputFormat = format
         }
         deleteOriginal = UserDefaults.standard.bool(forKey: "deleteOriginal")
-
-        knownFiles = scanDirectory()
-        startWatching()
-        requestNotificationPermission()
-    }
-
-    // MARK: - Notifications
-
-    private func requestNotificationPermission() {
+        isEnabled = !UserDefaults.standard.bool(forKey: "monitorPaused")
+        if isEnabled { startWatching() }
         UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound]) { _, _ in }
     }
 
-    private func sendNotification(fileNames: [String]) {
-        let content = UNMutableNotificationContent()
-        content.sound = .default
-
-        if fileNames.count == 1 {
-            content.title = String(localized: "Conversion complete")
-            content.body = String(localized: "Converted to \(fileNames[0])")
-        } else {
-            content.title = String(localized: "\(fileNames.count) files converted")
-            content.body = fileNames.joined(separator: ", ")
+    private func scan() throws -> [URL: FileStamp] {
+        let urls = try FileManager.default.contentsOfDirectory(
+            at: downloadsURL, includingPropertiesForKeys: [.isRegularFileKey, .fileSizeKey, .contentModificationDateKey, .fileResourceIdentifierKey],
+            options: [.skipsHiddenFiles])
+        var result: [URL: FileStamp] = [:]
+        for url in urls where ["heic", "heif"].contains(url.pathExtension.lowercased()) {
+            if let stamp = try? FileStamp.read(url) { result[url] = stamp }
         }
-
-        let request = UNNotificationRequest(
-            identifier: UUID().uuidString,
-            content: content,
-            trigger: nil
-        )
-        UNUserNotificationCenter.current().add(request)
+        return result
     }
-
-    // MARK: - Directory Scanning
-
-    private func scanDirectory() -> Set<String> {
-        guard let contents = try? FileManager.default.contentsOfDirectory(
-            at: downloadsURL,
-            includingPropertiesForKeys: nil
-        ) else { return [] }
-        return Set(contents.map(\.lastPathComponent))
-    }
-
-    // MARK: - File System Monitoring
 
     private func startWatching() {
         stopWatching()
-
-        let fd = open(downloadsURL.path, O_EVTONLY)
-        guard fd >= 0 else { return }
-
-        let source = DispatchSource.makeFileSystemObjectSource(
-            fileDescriptor: fd,
-            eventMask: .write,
-            queue: .main
-        )
-
-        source.setEventHandler { [weak self] in
-            DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
-                self?.checkForNewFiles()
-            }
+        do { tracker.reset(to: try scan()); hasBaseline = true; statusMessage = nil }
+        catch { statusMessage = String(localized: "Cannot read Downloads. Allow access in System Settings and retry.") }
+        timer = Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { [weak self] _ in
+            Task { @MainActor [weak self] in self?.checkForNewFiles() }
         }
-
-        source.setCancelHandler {
-            close(fd)
-        }
-
-        source.resume()
-        dispatchSource = source
     }
 
     private func stopWatching() {
-        dispatchSource?.cancel()
-        dispatchSource = nil
+        timer?.invalidate()
+        timer = nil
+        tracker.reset(to: [:])
+        hasBaseline = false
     }
-
-    // MARK: - New File Detection
 
     private func checkForNewFiles() {
-        guard isEnabled, !isProcessing else { return }
-
-        let currentFiles = scanDirectory()
-        let newFiles = currentFiles.subtracting(knownFiles)
-        knownFiles = currentFiles
-
-        let heicFiles = newFiles.filter { $0.lowercased().hasSuffix(".heic") }
-        guard !heicFiles.isEmpty else { return }
-
-        let airDropFiles = heicFiles.filter { name in
-            isAirDropFile(at: downloadsURL.appendingPathComponent(name))
+        guard isEnabled else { return }
+        let current: [URL: FileStamp]
+        do { current = try scan(); statusMessage = nil }
+        catch {
+            statusMessage = String(localized: "Cannot read Downloads. Allow access in System Settings and retry.")
+            return
         }
-        guard !airDropFiles.isEmpty else { return }
-
-        promptAndConvert(files: airDropFiles.sorted())
-    }
-
-    // MARK: - AirDrop Detection
-
-    private func isAirDropFile(at url: URL) -> Bool {
-        let attrName = "com.apple.quarantine"
-        let length = getxattr(url.path, attrName, nil, 0, 0, 0)
-        guard length > 0 else { return false }
-
-        var buffer = [UInt8](repeating: 0, count: length)
-        let read = getxattr(url.path, attrName, &buffer, length, 0, 0)
-        guard read > 0 else { return false }
-
-        guard let value = String(bytes: buffer, encoding: .utf8) else { return false }
-        let fields = value.split(separator: ";")
-        return fields.count >= 3 && fields[2] == "sharingd"
-    }
-
-    // MARK: - Conversion Prompt
-
-    private func promptAndConvert(files: [String]) {
-        isProcessing = true
-        defer { isProcessing = false }
-
-        let format = outputFormat
-
-        let alert = NSAlert()
-        alert.alertStyle = .informational
-        alert.icon = NSImage(
-            systemSymbolName: "photo.badge.arrow.down",
-            accessibilityDescription: "HEIC conversion"
-        )
-
-        if files.count == 1 {
-            alert.messageText = String(localized: "Received HEIC file via AirDrop")
-            alert.informativeText = files[0] + "\n\n"
-                + String(localized: "Convert to \(format.rawValue)?")
-        } else {
-            alert.messageText = String(localized: "Received \(files.count) HEIC files via AirDrop")
-            alert.informativeText = files.joined(separator: "\n") + "\n\n"
-                + String(localized: "Convert all to \(format.rawValue)?")
+        guard hasBaseline else {
+            tracker.reset(to: current)
+            hasBaseline = true
+            return
         }
-
-        alert.addButton(withTitle: String(localized: "Convert to \(format.rawValue)"))
-        alert.addButton(withTitle: String(localized: "Skip"))
-
-        NSApp.activate(ignoringOtherApps: true)
-
-        let response = alert.runModal()
-        guard response == .alertFirstButtonReturn else { return }
-
-        var convertedNames: [String] = []
-
-        for fileName in files {
-            let sourceURL = downloadsURL.appendingPathComponent(fileName)
-            let baseName = (fileName as NSString).deletingPathExtension
-            let destURL = uniqueURL(
-                for: downloadsURL.appendingPathComponent("\(baseName).\(format.fileExtension)")
-            )
-
-            if ImageConverter.convert(source: sourceURL, destination: destURL, format: format) {
-                let destName = destURL.lastPathComponent
-                lastConvertedFile = destName
-                convertedCount += 1
-                convertedNames.append(destName)
-                knownFiles.insert(destName)
-
-                if deleteOriginal {
-                    try? FileManager.default.removeItem(at: sourceURL)
-                }
+        let candidates = tracker.update(current)
+        var ready: [URL] = []
+        for url in candidates {
+            if tracker.pending[url, default: 0] > 60 && !AirDropMetadata.isAirDropFile(at: url) {
+                tracker.handled(url)
+                continue
             }
+            guard !isProcessing, AirDropMetadata.isAirDropFile(at: url),
+                  let source = CGImageSourceCreateWithURL(url as CFURL, nil),
+                  CGImageSourceGetStatus(source) == .statusComplete else { continue }
+            ready.append(url)
         }
+        guard !ready.isEmpty else { return }
+        for url in ready { tracker.handled(url) }
+        promptAndConvert(files: ready.sorted { $0.lastPathComponent < $1.lastPathComponent })
+    }
 
-        if !convertedNames.isEmpty {
-            sendNotification(fileNames: convertedNames)
+
+    func selectFiles() {
+        guard !isProcessing else { return }
+        isProcessing = true
+        let panel = NSOpenPanel()
+        panel.allowedContentTypes = [.heic, .heif]
+        panel.allowsMultipleSelection = true
+        panel.canChooseDirectories = false
+        NSApp.activate(ignoringOtherApps: true)
+        guard panel.runModal() == .OK else { isProcessing = false; return }
+        convert(files: panel.urls)
+    }
+
+    private func promptAndConvert(files: [URL]) {
+        isProcessing = true
+        let alert = NSAlert()
+        alert.messageText = String(localized: "Received \(files.count) HEIC files via AirDrop")
+        alert.informativeText = files.prefix(10).map(\.lastPathComponent).joined(separator: "\n")
+            + "\n\n" + String(localized: "Convert all to \(outputFormat.rawValue)?")
+        alert.addButton(withTitle: String(localized: "Convert to \(outputFormat.rawValue)"))
+        alert.addButton(withTitle: String(localized: "Skip"))
+        NSApp.activate(ignoringOtherApps: true)
+        if alert.runModal() == .alertFirstButtonReturn { convert(files: files) }
+        else { isProcessing = false }
+    }
+
+    private func convert(files: [URL]) {
+        isProcessing = true
+        let format = outputFormat
+        let trashOriginal = deleteOriginal
+        Task {
+            let result = await Task.detached(priority: .userInitiated) {
+                var outputs: [URL] = []
+                var errors: [String] = []
+                for file in files {
+                    autoreleasepool {
+                        do {
+                            let originalStamp = try FileStamp.read(file)
+                            let output = try ImageConverter.convert(source: file, format: format)
+                            outputs.append(output)
+                            if trashOriginal {
+                                do {
+                                    guard try FileStamp.read(file) == originalStamp else {
+                                        throw NSError(domain: "AirDropConverter", code: 3, userInfo: [
+                                            NSLocalizedDescriptionKey: String(localized: "The original changed during conversion and was kept.")
+                                        ])
+                                    }
+                                    try FileManager.default.trashItem(at: file, resultingItemURL: nil)
+                                }
+                                catch { errors.append(file.lastPathComponent + ": " + error.localizedDescription) }
+                            }
+                        } catch { errors.append(file.lastPathComponent + ": " + error.localizedDescription) }
+                    }
+                }
+                return (outputs, errors)
+            }.value
+            convertedCount += result.0.count
+            lastConvertedFile = result.0.last?.lastPathComponent ?? lastConvertedFile
+            if !result.0.isEmpty {
+                let content = UNMutableNotificationContent()
+                content.title = String(localized: "Conversion complete")
+                content.body = result.0.map(\.lastPathComponent).joined(separator: ", ")
+                content.sound = .default
+                try? await UNUserNotificationCenter.current().add(
+                    UNNotificationRequest(identifier: UUID().uuidString, content: content, trigger: nil))
+            }
+            if !result.1.isEmpty { showError(result.1.joined(separator: "\n")) }
+            isProcessing = false
         }
     }
 
-    // MARK: - Helpers
-
-    private func uniqueURL(for url: URL) -> URL {
-        let fm = FileManager.default
-        guard fm.fileExists(atPath: url.path) else { return url }
-
-        let dir = url.deletingLastPathComponent()
-        let baseName = url.deletingPathExtension().lastPathComponent
-        let ext = url.pathExtension
-
-        var counter = 2
-        while true {
-            let candidate = dir.appendingPathComponent("\(baseName) \(counter).\(ext)")
-            if !fm.fileExists(atPath: candidate.path) { return candidate }
-            counter += 1
-        }
+    func showError(_ message: String) {
+        let alert = NSAlert()
+        alert.alertStyle = .warning
+        alert.messageText = String(localized: "Some operations could not be completed")
+        alert.informativeText = message
+        NSApp.activate(ignoringOtherApps: true)
+        alert.runModal()
     }
 }

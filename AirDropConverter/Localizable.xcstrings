@@ -1,236 +1,356 @@
 {
-  "sourceLanguage" : "en",
-  "strings" : {
-    "Active" : {
-      "localizations" : {
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "動作中"
+  "sourceLanguage": "en",
+  "strings": {
+    "Active": {
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "動作中"
           }
         }
       }
     },
-    "Paused" : {
-      "localizations" : {
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "停止中"
+    "Paused": {
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "停止中"
           }
         }
       }
     },
-    "Output Format" : {
-      "localizations" : {
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "変換形式"
+    "Output Format": {
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "変換形式"
           }
         }
       }
     },
-    "Delete HEIC after conversion" : {
-      "localizations" : {
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "変換後にHEICを削除"
+    "Delete HEIC after conversion": {
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "変換後にHEICを削除"
           }
         }
       }
     },
-    "Launch at Login" : {
-      "localizations" : {
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "ログイン時に起動"
+    "Launch at Login": {
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ログイン時に起動"
           }
         }
       }
     },
-    "Last: %@" : {
-      "localizations" : {
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "最後: %@"
+    "Last: %@": {
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "最後: %@"
           }
         }
       }
     },
-    "Converted: %lld files" : {
-      "localizations" : {
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "変換済み: %lld件"
+    "Converted: %lld files": {
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "変換済み: %lld件"
           }
         }
       }
     },
-    "Quit" : {
-      "localizations" : {
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "終了"
+    "Quit": {
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "終了"
           }
         }
       }
     },
-    "Received HEIC file via AirDrop" : {
-      "localizations" : {
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "AirDropでHEICファイルを受信"
+    "Received HEIC file via AirDrop": {
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "AirDropでHEICファイルを受信"
           }
         }
       }
     },
-    "Received %lld HEIC files via AirDrop" : {
-      "localizations" : {
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "AirDropで%lld件のHEICファイルを受信"
+    "Received %lld HEIC files via AirDrop": {
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "AirDropで%lld件のHEICファイルを受信"
           }
         }
       }
     },
-    "Convert to %@?" : {
-      "localizations" : {
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%@に変換しますか？"
+    "Convert to %@?": {
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@に変換しますか？"
           }
         }
       }
     },
-    "Convert all to %@?" : {
-      "localizations" : {
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "すべて%@に変換しますか？"
+    "Convert all to %@?": {
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "すべて%@に変換しますか？"
           }
         }
       }
     },
-    "Convert to %@" : {
-      "localizations" : {
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%@に変換"
+    "Convert to %@": {
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@に変換"
           }
         }
       }
     },
-    "Skip" : {
-      "localizations" : {
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "スキップ"
+    "Skip": {
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "スキップ"
           }
         }
       }
     },
-    "Conversion complete" : {
-      "localizations" : {
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "変換完了"
+    "Conversion complete": {
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "変換完了"
           }
         }
       }
     },
-    "Converted to %@" : {
-      "localizations" : {
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%@に変換しました"
+    "Converted to %@": {
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@に変換しました"
           }
         }
       }
     },
-    "%lld files converted" : {
-      "localizations" : {
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%lld件の変換完了"
+    "%lld files converted": {
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld件の変換完了"
           }
         }
       }
     },
-    "Move to Applications?" : {
-      "localizations" : {
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Applicationsフォルダに移動しますか？"
+    "Move to Applications?": {
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Applicationsフォルダに移動しますか？"
           }
         }
       }
     },
-    "AirDropConverter works best from the Applications folder. Move it now?" : {
-      "localizations" : {
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "AirDropConverterはApplicationsフォルダから実行するのが最適です。今すぐ移動しますか？"
+    "AirDropConverter works best from the Applications folder. Move it now?": {
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "AirDropConverterはApplicationsフォルダから実行するのが最適です。今すぐ移動しますか？"
           }
         }
       }
     },
-    "Move to Applications" : {
-      "localizations" : {
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Applicationsに移動"
+    "Move to Applications": {
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Applicationsに移動"
           }
         }
       }
     },
-    "Later" : {
-      "localizations" : {
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "あとで"
+    "Later": {
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "あとで"
           }
         }
       }
     },
-    "Could not move to Applications" : {
-      "localizations" : {
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Applicationsフォルダに移動できませんでした"
+    "Could not move to Applications": {
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Applicationsフォルダに移動できませんでした"
           }
         }
       }
     },
-    "Please move AirDropConverter.app to the Applications folder manually." : {
-      "localizations" : {
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "AirDropConverter.appを手動でApplicationsフォルダに移動してください。"
+    "Please move AirDropConverter.app to the Applications folder manually.": {
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "AirDropConverter.appを手動でApplicationsフォルダに移動してください。"
+          }
+        }
+      }
+    },
+    "Converting…": {
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "変換中…"
+          }
+        }
+      }
+    },
+    "Convert HEIC Files…": {
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "HEICファイルを変換…"
+          }
+        }
+      }
+    },
+    "Open Downloads": {
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ダウンロードフォルダを開く"
+          }
+        }
+      }
+    },
+    "Cannot read Downloads. Allow access in System Settings and retry.": {
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ダウンロードフォルダを読み込めません。システム設定でアクセスを許可して再試行してください。"
+          }
+        }
+      }
+    },
+    "Some operations could not be completed": {
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "一部の処理を完了できませんでした"
+          }
+        }
+      }
+    },
+    "An app already exists in Applications. Replace it manually.": {
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Applicationsに同名のアプリがあります。手動で置き換えてください。"
+          }
+        }
+      }
+    },
+    "This output format is not supported by this Mac.": {
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "このMacでは指定の出力形式に対応していません。"
+          }
+        }
+      }
+    },
+    "The image is incomplete or could not be read.": {
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "画像が受信途中、または読み込めない状態です。"
+          }
+        }
+      }
+    },
+    "Could not create the converted image.": {
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "変換先の画像を作成できませんでした。"
+          }
+        }
+      }
+    },
+    "Could not finish writing the converted image.": {
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "変換した画像の保存を完了できませんでした。"
+          }
+        }
+      }
+    },
+    "Too many files have the same name.": {
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "同名のファイルが多すぎます。"
+          }
+        }
+      }
+    },
+    "The original changed during conversion and was kept.": {
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "変換中に元画像が変更されたため、元画像を保持しました。"
           }
         }
       }
     }
   },
-  "version" : "1.0"
+  "version": "1.0"
 }

@@ -7,11 +7,14 @@
 
 import AppKit
 
+@MainActor
 enum AppMover {
     static func moveToApplicationsIfNeeded() {
+        #if !DEBUG
         let bundlePath = Bundle.main.bundlePath
 
-        if bundlePath.hasPrefix("/Applications") { return }
+        if bundlePath.hasPrefix("/Applications/") ||
+            bundlePath.hasPrefix(FileManager.default.homeDirectoryForCurrentUser.appendingPathComponent("Applications").path + "/") { return }
 
         let appName = Bundle.main.bundleURL.lastPathComponent
         let destPath = "/Applications/\(appName)"
@@ -31,24 +34,35 @@ enum AppMover {
 
         do {
             let fm = FileManager.default
-            if fm.fileExists(atPath: destPath) {
-                try fm.removeItem(atPath: destPath)
+            guard !fm.fileExists(atPath: destPath) else {
+                throw NSError(domain: "AirDropConverter", code: 2, userInfo: [
+                    NSLocalizedDescriptionKey: String(localized: "An app already exists in Applications. Replace it manually.")
+                ])
             }
-            try fm.moveItem(atPath: bundlePath, toPath: destPath)
+            try fm.copyItem(atPath: bundlePath, toPath: destPath)
 
-            // Relaunch from /Applications
-            let process = Process()
-            process.executableURL = URL(fileURLWithPath: "/usr/bin/open")
-            process.arguments = [destPath]
-            try process.run()
-
-            NSApp.terminate(nil)
+            let configuration = NSWorkspace.OpenConfiguration()
+            configuration.createsNewApplicationInstance = true
+            NSWorkspace.shared.openApplication(at: URL(fileURLWithPath: destPath),
+                                              configuration: configuration) { _, error in
+                Task { @MainActor in
+                    if let error {
+                        let alert = NSAlert()
+                        alert.messageText = String(localized: "Could not move to Applications")
+                        alert.informativeText = error.localizedDescription
+                        alert.runModal()
+                    } else {
+                        NSApp.terminate(nil)
+                    }
+                }
+            }
         } catch {
             let errorAlert = NSAlert()
             errorAlert.alertStyle = .warning
             errorAlert.messageText = String(localized: "Could not move to Applications")
-            errorAlert.informativeText = String(localized: "Please move AirDropConverter.app to the Applications folder manually.")
+            errorAlert.informativeText = error.localizedDescription + "\n\n" + String(localized: "Please move AirDropConverter.app to the Applications folder manually.")
             errorAlert.runModal()
         }
+        #endif
     }
 }
