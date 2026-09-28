@@ -8,19 +8,19 @@ The landing page is in [index.html](index.html); hosting instructions are in [we
 
 ## 日本語
 
-iPhoneからAirDropで受信したHEIC/HEIF画像を自動検出し、PNG・JPEGへ変換するmacOSメニューバーアプリです。
+ダウンロードフォルダに新しく入ったHEIC/HEIF画像を、AirDrop由来かどうかに関係なく自動でPNGに変換するmacOSメニューバーアプリです。
 
 [最新版をダウンロード](https://github.com/yuuki00682200/AirDropConverter/releases/latest)
 
 ### 主な機能
 
-- **自動検出**：ダウンロードフォルダを監視し、AirDrop由来の画像の受信完了とファイルの安定を待って変換を案内します。
+- **自動変換**：ダウンロードフォルダを監視し、新着HEIC/HEIF画像の保存完了とファイルの安定を待って、確認なしでPNGに変換します。
 - **まとめて変換**：受信した複数の画像をまとめて変換できます。変換はバックグラウンドで実行します。
 - **手動変換**：メニューの「HEICファイルを変換…」から、任意のフォルダの画像を選択できます。
-- **出力形式**：PNG・JPEGに対応。WebPはmacOSのImageIOが書き出しに対応している環境のみ表示します。
+- **手動変換の出力形式**：PNG・JPEGに対応。WebPはmacOSのImageIOが書き出しに対応している環境のみ表示します。自動変換はPNG固定です。
 - **元画像を保護**：「変換後にHEICを削除」をオンにすると、変換成功後に元画像をゴミ箱へ移動します。失敗した画像や変換中に変更された元画像は保持します。
 - **上書き防止**：同名の出力がある場合は連番を付けます。画像の向きを反映して保存します。
-- **設定の保存**：監視の停止状態、出力形式、元画像を削除する設定を次回起動時も保持します。
+- **設定の保存**：監視の停止状態、手動変換の出力形式、元画像を削除する設定を次回起動時も保持します。
 - **ログイン時に起動**・**変換完了通知**・**日本語／英語表示**に対応。Dockアイコンを表示せずメニューバーに常駐します。
 
 ### インストール
@@ -39,9 +39,9 @@ iPhoneからAirDropで受信したHEIC/HEIF画像を自動検出し、PNG・JPEG
 
 ### 使い方と制限
 
-AirDropで画像を受信すると、受信完了後に変換確認が表示されます。出力は元画像と同じフォルダに保存します。
+AirDropで受信した画像やダウンロードした画像など、新しいHEIC/HEIFがダウンロードフォルダに入ると、保存完了後に自動でPNGを作成します。出力は元画像と同じフォルダに保存します。
 
-- 自動検出にはquarantine属性の送信元が `sharingd` である必要があります。属性のない画像は手動変換してください。
+- 自動変換はダウンロードフォルダ直下の新着ファイルだけが対象です。他のフォルダの画像は手動変換してください。
 - 監視開始時や停止から再開した時点ですでに存在する画像は、自動変換の対象になりません。
 - WebPの読み込み対応と書き出し対応は異なります。WebPエンコーダーは同梱していません。
 - HEIFの主画像のみ変換します。連続画像、深度情報、Live Photoの動画は出力しません。
@@ -64,7 +64,7 @@ AirDropで画像を受信すると、受信完了後に変換確認が表示さ�
 ./scripts/notarize-release.sh AirDropConverter
 ```
 
-テストは、画像形式・向き・同名ファイル保護・元画像保持・破損入力・一時ファイル清掃、AirDrop属性判定、受信安定待ち・処理中の受信保持・同名再受信を検証します。
+テストは、画像形式・向き・同名ファイル保護・元画像保持・破損入力・一時ファイル清掃、AirDrop属性なしのHEIC判定、受信安定待ち・処理中の受信保持・同名再受信を検証します。
 
 `build-local.sh`はアドホック署名の未公証アプリと `build/AirDropConverter-local.zip` を作成します。
 
@@ -82,19 +82,19 @@ AirDropで画像を受信すると、受信完了後に変換確認が表示さ�
 
 ## English
 
-A macOS menu bar app that automatically detects HEIC/HEIF images received from an iPhone via AirDrop and converts them to PNG or JPEG.
+A macOS menu bar app that automatically converts new HEIC/HEIF images in Downloads to PNG, including images received via AirDrop.
 
 [Download the latest release](https://github.com/yuuki00682200/AirDropConverter/releases/latest)
 
 ### Features
 
-- **Automatic detection**: Monitors Downloads and waits for complete, stable AirDrop transfers before offering conversion.
+- **Automatic conversion**: Monitors Downloads and converts new, complete, stable HEIC/HEIF images to PNG without a prompt, regardless of their source.
 - **Batch conversion**: Converts multiple received images in the background.
 - **Manual conversion**: Choose images from any folder using “Convert HEIC Files…” in the menu.
-- **Output formats**: PNG and JPEG. WebP is offered only when the system's ImageIO supports encoding it.
+- **Manual output formats**: PNG and JPEG. WebP is offered only when the system's ImageIO supports encoding it. Automatic conversion always uses PNG.
 - **Safe originals**: Enable “Delete HEIC after conversion” to move originals to Trash after successful conversion. Failed inputs and originals changed during conversion are kept.
 - **No overwrites**: Existing outputs are protected with numbered filenames. Image orientation is baked into the output pixels.
-- **Persistent settings**: Pause state, output format, and the original-file option survive app restarts.
+- **Persistent settings**: Pause state, manual output format, and the original-file option survive app restarts.
 - **Launch at Login**, **completion notifications**, and **English/Japanese menus**. Runs in the menu bar without a Dock icon.
 
 ### Installation
@@ -113,9 +113,9 @@ A macOS menu bar app that automatically detects HEIC/HEIF images received from a
 
 ### Usage and limitations
 
-After receiving an image via AirDrop, confirm conversion in the prompt. Outputs are saved next to the source images.
+When a new HEIC/HEIF image arrives in Downloads, the app creates a PNG after the file is complete. Outputs are saved next to the source images.
 
-- Automatic detection requires the quarantine agent to be `sharingd`. Use manual conversion for images without that attribute.
+- Automatic conversion watches only new files directly inside Downloads. Use manual conversion for other folders.
 - Files already present when monitoring starts or resumes do not trigger automatic prompts.
 - WebP decoding support does not imply encoding support. No WebP encoder is bundled.
 - Only the primary HEIF image is converted. Image sequences, depth maps, and Live Photo video companions are not exported.
@@ -138,7 +138,7 @@ Clone the repository and open `AirDropConverter.xcodeproj` in Xcode 26.3 or late
 ./scripts/notarize-release.sh AirDropConverter
 ```
 
-Tests cover output types, orientation, filename collisions, original preservation, corrupt input, temporary-file cleanup, AirDrop quarantine classification, stable-transfer detection, arrivals during a busy UI, and reused filenames.
+Tests cover output types, orientation, filename collisions, original preservation, corrupt input, temporary-file cleanup, HEIC detection without AirDrop metadata, stable-transfer detection, arrivals during a busy UI, and reused filenames.
 
 `build-local.sh` creates an ad-hoc signed, non-notarized app and `build/AirDropConverter-local.zip`.
 

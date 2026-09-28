@@ -45,21 +45,12 @@ struct ConversionTests {
                 fatalError("Unsupported output should fail")
             } catch {}
         }
-        precondition(!AirDropMetadata.isAirDropFile(at: source))
-        for (attribute, expected) in [
-            ("0081;1234;sharingd;UUID", true),
-            ("0081;;sharingd;", true),
-            ("0081;1234;Safari;UUID", false),
-            ("sharingd", false),
-            ("0081;sharingd;;UUID", false)
-        ] {
-            let result = attribute.withCString {
-                setxattr(source.path, "com.apple.quarantine", $0, attribute.utf8.count, 0, 0)
-            }
-            precondition(result == 0)
-            precondition(AirDropMetadata.isAirDropFile(at: source) == expected)
-        }
-        print("PASS: AirDrop quarantine classification")
+        precondition(AutomaticConversionCandidate.isSupported(source))
+        precondition(AutomaticConversionCandidate.isSupported(directory.appendingPathComponent("PHOTO.HEIF")))
+        precondition(!AutomaticConversionCandidate.isSupported(directory.appendingPathComponent("photo.jpg")))
+        precondition(AutomaticConversionCandidate.isCompleteImage(source), "HEIC without quarantine must be eligible")
+        precondition(!AutomaticConversionCandidate.isCompleteImage(corrupt), "Corrupt HEIC must wait and then be skipped")
+        print("PASS: HEIC/HEIF detection without AirDrop metadata and complete-image check")
         let url = directory.appendingPathComponent("arrival.heic")
         let stamp = FileStamp(size: 10, modified: Date(timeIntervalSince1970: 1), identifier: "a")
         let changed = FileStamp(size: 20, modified: Date(timeIntervalSince1970: 2), identifier: "a")

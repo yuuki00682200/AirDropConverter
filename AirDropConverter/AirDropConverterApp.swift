@@ -59,7 +59,7 @@ struct MenuBarView: View {
 
         Divider()
 
-        Picker("Output Format", selection: $monitor.outputFormat) {
+        Picker("Manual Output Format", selection: $monitor.outputFormat) {
             ForEach(OutputFormat.supported, id: \.self) { format in
                 Text(format.rawValue).tag(format)
             }

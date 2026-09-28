@@ -1,6 +1,5 @@
 import Foundation
 import AppKit
-import ImageIO
 import UniformTypeIdentifiers
 import UserNotifications
 
@@ -44,7 +43,7 @@ final class DownloadsMonitor {
             at: downloadsURL, includingPropertiesForKeys: [.isRegularFileKey, .fileSizeKey, .contentModificationDateKey, .fileResourceIdentifierKey],
             options: [.skipsHiddenFiles])
         var result: [URL: FileStamp] = [:]
-        for url in urls where ["heic", "heif"].contains(url.pathExtension.lowercased()) {
+        for url in urls where AutomaticConversionCandidate.isSupported(url) {
             if let stamp = try? FileStamp.read(url) { result[url] = stamp }
         }
         return result
@@ -82,18 +81,16 @@ final class DownloadsMonitor {
         let candidates = tracker.update(current)
         var ready: [URL] = []
         for url in candidates {
-            if tracker.pending[url, default: 0] > 60 && !AirDropMetadata.isAirDropFile(at: url) {
+            guard !isProcessing else { continue }
+            if AutomaticConversionCandidate.isCompleteImage(url) {
+                ready.append(url)
+            } else if tracker.pending[url, default: 0] > 60 {
                 tracker.handled(url)
-                continue
             }
-            guard !isProcessing, AirDropMetadata.isAirDropFile(at: url),
-                  let source = CGImageSourceCreateWithURL(url as CFURL, nil),
-                  CGImageSourceGetStatus(source) == .statusComplete else { continue }
-            ready.append(url)
         }
         guard !ready.isEmpty else { return }
         for url in ready { tracker.handled(url) }
-        promptAndConvert(files: ready.sorted { $0.lastPathComponent < $1.lastPathComponent })
+        convert(files: ready.sorted { $0.lastPathComponent < $1.lastPathComponent }, format: .png)
     }
 
 
@@ -106,25 +103,11 @@ final class DownloadsMonitor {
         panel.canChooseDirectories = false
         NSApp.activate(ignoringOtherApps: true)
         guard panel.runModal() == .OK else { isProcessing = false; return }
-        convert(files: panel.urls)
+        convert(files: panel.urls, format: outputFormat)
     }
 
-    private func promptAndConvert(files: [URL]) {
+    private func convert(files: [URL], format: OutputFormat) {
         isProcessing = true
-        let alert = NSAlert()
-        alert.messageText = String(localized: "Received \(files.count) HEIC files via AirDrop")
-        alert.informativeText = files.prefix(10).map(\.lastPathComponent).joined(separator: "\n")
-            + "\n\n" + String(localized: "Convert all to \(outputFormat.rawValue)?")
-        alert.addButton(withTitle: String(localized: "Convert to \(outputFormat.rawValue)"))
-        alert.addButton(withTitle: String(localized: "Skip"))
-        NSApp.activate(ignoringOtherApps: true)
-        if alert.runModal() == .alertFirstButtonReturn { convert(files: files) }
-        else { isProcessing = false }
-    }
-
-    private func convert(files: [URL]) {
-        isProcessing = true
-        let format = outputFormat
         let trashOriginal = deleteOriginal
         Task {
             let result = await Task.detached(priority: .userInitiated) {
