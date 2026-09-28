@@ -30,7 +30,7 @@ iPhoneからAirDropで受信したHEIC/HEIF画像を自動検出し、PNG・JPEG
 3. macOSから要求されたら、ダウンロードフォルダへのアクセスを許可してください。通知の許可は任意です。
 4. メニューバーから出力形式や「変換後にHEICを削除」を設定します。
 
-**v1.0.3はDeveloper ID Application（MEMEMAKER, K.K.）で署名し、Appleの公証を取得済みです。公証チケットも添付しています。**
+**v1.0.3はDeveloper ID Applicationで署名し、Appleの公証を取得済みです。公証チケットも添付しています。**
 
 ### 動作環境
 
@@ -104,7 +104,7 @@ A macOS menu bar app that automatically detects HEIC/HEIF images received from a
 3. Allow Downloads access when prompted. Notifications are optional.
 4. Select an output format and configure “Delete HEIC after conversion” from the menu.
 
-**v1.0.3 is signed with Developer ID Application (MEMEMAKER, K.K.), notarized by Apple, and includes the notarization ticket.**
+**v1.0.3 is signed with Developer ID Application, notarized by Apple, and includes the notarization ticket.**
 
 ### Requirements
 
