@@ -31,6 +31,16 @@
         }
       }
     },
+    "Manual Output Format": {
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "手動変換の形式"
+          }
+        }
+      }
+    },
     "Delete HEIC after conversion": {
       "localizations": {
         "ja": {

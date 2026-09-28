@@ -1,4 +1,5 @@
 import Foundation
+import ImageIO
 
 struct FileStamp: Equatable, Sendable {
     let size: Int
@@ -38,15 +39,13 @@ struct FileArrivalTracker {
     mutating func handled(_ url: URL) { pending.removeValue(forKey: url) }
 }
 
-enum AirDropMetadata {
-    static func isAirDropFile(at url: URL) -> Bool {
-        let length = getxattr(url.path, "com.apple.quarantine", nil, 0, 0, 0)
-        guard length > 0 else { return false }
-        var buffer = [UInt8](repeating: 0, count: length)
-        let count = getxattr(url.path, "com.apple.quarantine", &buffer, length, 0, 0)
-        guard count > 0, let value = String(bytes: buffer.prefix(count), encoding: .utf8) else { return false }
-        let fields = value.split(separator: ";", omittingEmptySubsequences: false)
-        return fields.count >= 3 && fields[2] == "sharingd"
+enum AutomaticConversionCandidate {
+    static func isSupported(_ url: URL) -> Bool {
+        ["heic", "heif"].contains(url.pathExtension.lowercased())
     }
 
+    static func isCompleteImage(_ url: URL) -> Bool {
+        guard let source = CGImageSourceCreateWithURL(url as CFURL, nil) else { return false }
+        return CGImageSourceGetStatus(source) == .statusComplete
+    }
 }
